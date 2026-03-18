@@ -1,26 +1,177 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Blanc Belluno — Pastel Romantic Palette */
+  --color-blush: #F8E8EE;
+  --color-rose: #EDD5E1;
+  --color-mauve: #C9A0BC;
+  --color-dusty-rose: #D4899A;
+  --color-gold: #C9A96E;
+  --color-gold-light: #E8D5B0;
+  --color-cream: #FFF9F5;
+  --color-ivory: #FAF5F0;
+  --color-text-dark: #4A2D3E;
+  --color-text-mid: #7A5466;
+  --color-text-light: #A8889A;
+  --color-white: #FFFFFF;
+
+  --background: var(--color-cream);
+  --foreground: var(--color-text-dark);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-cormorant);
+  --font-body: var(--font-noto);
+
+  /* Custom palette tokens for Tailwind */
+  --color-blush: #F8E8EE;
+  --color-rose: #EDD5E1;
+  --color-mauve: #C9A0BC;
+  --color-dusty-rose: #D4899A;
+  --color-gold: #C9A96E;
+  --color-gold-light: #E8D5B0;
+  --color-cream: #FFF9F5;
+  --color-ivory: #FAF5F0;
+  --color-text-dark: #4A2D3E;
+  --color-text-mid: #7A5466;
+  --color-text-light: #A8889A;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-text-dark);
+  font-family: var(--font-noto), "Noto Sans KR", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Display font utility */
+.font-display {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+}
+
+/* Gold divider */
+.divider-gold {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  margin: 0 auto;
+}
+
+/* Floating animation for hero elements */
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-float {
+  animation: floatUp 4s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Section padding utility */
+.section-padding {
+  padding: 6rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding: 8rem 2rem;
+  }
+}
+
+/* Input focus style */
+.input-belluno {
+  background: white;
+  border: 1px solid var(--color-rose);
+  border-radius: 0.5rem;
+  padding: 0.875rem 1.125rem;
+  width: 100%;
+  font-family: var(--font-noto), sans-serif;
+  font-size: 0.9375rem;
+  color: var(--color-text-dark);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.input-belluno:focus {
+  border-color: var(--color-mauve);
+  box-shadow: 0 0 0 3px rgba(201, 160, 188, 0.15);
+}
+
+.input-belluno::placeholder {
+  color: var(--color-text-light);
+}
+
+/* Button styles */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--color-dusty-rose), var(--color-mauve));
+  color: white;
+  font-family: var(--font-noto), sans-serif;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  letter-spacing: 0.05em;
+  padding: 0.875rem 2rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(212, 137, 154, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(212, 137, 154, 0.4);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--color-text-dark);
+  font-family: var(--font-noto), sans-serif;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  letter-spacing: 0.05em;
+  padding: 0.875rem 2rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--color-mauve);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: var(--color-blush);
+  transform: translateY(-2px);
 }
