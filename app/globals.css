@@ -10,11 +10,11 @@
   --color-champagne: #F2EBE1;
   --color-sand: #DCCCBE;
   --color-gold: #C5A880;
-  
+
   --color-text-primary: #332B2B;
   --color-text-secondary: #706363;
   --color-text-muted: #A39696;
-  
+
   --background: var(--color-base);
   --foreground: var(--color-text-primary);
 }

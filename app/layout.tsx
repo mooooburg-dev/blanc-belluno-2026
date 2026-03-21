@@ -31,7 +31,8 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Blanc Belluno | 블랑벨루노",
-    description: "당신의 특별한 날을 더욱 빛나게 — 프리미엄 풍선 장식 & 이벤트 스타일링",
+    description:
+      "당신의 특별한 날을 더욱 빛나게 — 프리미엄 풍선 장식 & 이벤트 스타일링",
     type: "website",
   },
 };
