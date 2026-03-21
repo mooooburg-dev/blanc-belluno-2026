@@ -1,26 +1,202 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Blanc Belluno — Premium Pastel Palette */
+  --color-base: #FCFBF9;
+  --color-surface: #FFFFFF;
+  --color-blush-light: #FBF5F7;
+  --color-blush: #F4E7EB;
+  --color-rose: #EBD4DB;
+  --color-champagne: #F2EBE1;
+  --color-sand: #DCCCBE;
+  --color-gold: #C5A880;
+
+  --color-text-primary: #332B2B;
+  --color-text-secondary: #706363;
+  --color-text-muted: #A39696;
+
+  --background: var(--color-base);
+  --foreground: var(--color-text-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-cormorant);
+  --font-body: var(--font-noto);
+
+  /* Mapping tokens */
+  --color-blanc-base: #FCFBF9;
+  --color-blanc-surface: #FFFFFF;
+  --color-blanc-blush-light: #FBF5F7;
+  --color-blanc-blush: #F4E7EB;
+  --color-blanc-rose: #EBD4DB;
+  --color-blanc-champagne: #F2EBE1;
+  --color-blanc-sand: #DCCCBE;
+  --color-blanc-gold: #C5A880;
+  --color-blanc-text-primary: #332B2B;
+  --color-blanc-text-secondary: #706363;
+  --color-blanc-text-muted: #A39696;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-noto), "Noto Sans KR", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Display font overrides */
+.font-display {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+}
+
+/* Sophisticated line divider */
+.divider-gold {
+  width: 40px;
+  height: 1px;
+  background: var(--color-gold);
+  margin: 0 auto;
+}
+
+/* Smooth micro-animations */
+@keyframes fadeUpIn {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes subtleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes orbMorph {
+  0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+  34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+  67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
+  100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+}
+
+.animate-fade-up {
+  animation: fadeUpIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-float {
+  animation: subtleFloat 6s ease-in-out infinite;
+}
+
+.orb-shape {
+  animation: orbMorph 15s ease-in-out infinite alternate;
+}
+
+/* Fade-in on load — used for sections that should appear immediately */
+.animate-fade-in-view {
+  animation: fadeUpIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Section Spacing */
+.section-padding {
+  padding: 5rem 1.5rem;
+}
+@media (min-width: 768px) {
+  .section-padding { padding: 7rem 2rem; }
+}
+@media (min-width: 1024px) {
+  .section-padding { padding: 8rem 4rem; }
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+}
+
+/* Elegant Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-text-primary);
+  color: #FFFFFF;
+  font-family: var(--font-noto), sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  padding: 1rem 2.5rem;
+  border-radius: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(51, 43, 43, 0.15);
+}
+
+.btn-primary:hover::after {
+  opacity: 1;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-family: var(--font-noto), sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  padding: 1rem 2.5rem;
+  border-radius: 0;
+  border: 1px solid var(--color-text-primary);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-outline:hover {
+  background: var(--color-blush-light);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(51, 43, 43, 0.05);
+}
+
+/* Elegant Input */
+.input-belluno {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--color-champagne);
+  padding: 1rem 1.25rem;
+  width: 100%;
+  font-family: var(--font-noto), sans-serif;
+  font-size: 0.9375rem;
+  color: var(--color-text-primary);
+  transition: all 0.3s ease;
+  outline: none;
+  border-radius: 0;
+}
+
+.input-belluno:focus {
+  border-color: var(--color-gold);
+  background: #FFFFFF;
+  box-shadow: 0 4px 20px rgba(197, 168, 128, 0.1);
+}
+
+.input-belluno::placeholder {
+  color: var(--color-text-muted);
 }
