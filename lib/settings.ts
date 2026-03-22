@@ -4,6 +4,7 @@ export interface SiteSettings {
   instagram: string;
   kakaoChannel: string;
   naverBlog: string;
+  naverSmartStore: string;
   phone: string;
   email: string;
   businessHours: string;
@@ -14,6 +15,7 @@ const defaultSettings: SiteSettings = {
   instagram: "blancbelluno",
   kakaoChannel: "@blancbelluno",
   naverBlog: "",
+  naverSmartStore: "https://smartstore.naver.com/blancbelluno",
   phone: "",
   email: "",
   businessHours: "Mon - Fri / 10:00 - 18:00",

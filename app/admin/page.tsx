@@ -37,6 +37,7 @@ interface SiteSettings {
   instagram: string;
   kakaoChannel: string;
   naverBlog: string;
+  naverSmartStore: string;
   phone: string;
   email: string;
   businessHours: string;
@@ -436,6 +437,12 @@ function SettingsTab() {
           value={settings.naverBlog}
           onChange={(v) => update("naverBlog", v)}
           placeholder="https://blog.naver.com/blancbelluno"
+        />
+        <SettingsField
+          label="네이버 스마트스토어 URL"
+          value={settings.naverSmartStore}
+          onChange={(v) => update("naverSmartStore", v)}
+          placeholder="https://smartstore.naver.com/blancbelluno"
         />
       </SettingsSection>
 
