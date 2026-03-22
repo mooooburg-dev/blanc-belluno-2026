@@ -34,6 +34,11 @@ export const metadata: Metadata = {
     description:
       "당신의 특별한 날을 더욱 빛나게 — 프리미엄 풍선 장식 & 이벤트 스타일링",
     type: "website",
+    images: [{ url: "/blanc_belluno_logo.jpg", width: 800, height: 800 }],
+  },
+  icons: {
+    icon: "/blanc_belluno_logo.jpg",
+    apple: "/blanc_belluno_logo.jpg",
   },
 };
 

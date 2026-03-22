@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 interface SiteSettings {
   instagram: string;
   kakaoChannel: string;
   naverBlog: string;
+  naverSmartStore: string;
   phone: string;
   email: string;
   businessHours: string;
@@ -26,13 +28,22 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 mb-14">
           {/* Brand Info */}
           <div className="md:col-span-5">
-            <Link href="#home" className="inline-block mb-5 group">
-              <p className="font-display text-2xl font-light tracking-[0.25em] text-white leading-none group-hover:text-blanc-champagne transition-colors">
-                BLANC
-              </p>
-              <p className="font-display text-[9px] tracking-[0.4em] text-blanc-gold mt-1 pl-0.5">
-                BELLUNO
-              </p>
+            <Link href="#home" className="inline-flex items-center gap-3 mb-5 group">
+              <Image
+                src="/blanc_belluno_logo.jpg"
+                alt="Blanc Belluno"
+                width={48}
+                height={48}
+                className="rounded-full"
+              />
+              <div>
+                <p className="font-display text-2xl font-light tracking-[0.25em] text-white leading-none group-hover:text-blanc-champagne transition-colors">
+                  BLANC
+                </p>
+                <p className="font-display text-[9px] tracking-[0.4em] text-blanc-gold mt-1 pl-0.5">
+                  BELLUNO
+                </p>
+              </div>
             </Link>
             <p className="font-body text-sm font-light leading-loose text-blanc-champagne/60 mb-6 max-w-xs whitespace-pre-line">
               {settings.brandDescription}
@@ -54,6 +65,11 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
               {settings.naverBlog && (
                 <SocialLink href={settings.naverBlog} label="Naver Blog">
                   NB
+                </SocialLink>
+              )}
+              {settings.naverSmartStore && (
+                <SocialLink href={settings.naverSmartStore} label="Naver SmartStore">
+                  NS
                 </SocialLink>
               )}
             </div>

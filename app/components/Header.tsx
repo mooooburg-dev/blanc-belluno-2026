@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -51,14 +52,23 @@ export default function Header() {
         <Link
           href="#home"
           onClick={() => handleNavClick("#home")}
-          className="flex flex-col items-center justify-center group"
+          className="flex items-center group"
         >
-          <span className="font-display text-xl md:text-2xl font-light tracking-[0.15em] text-blanc-text-primary group-hover:text-blanc-text-secondary transition-colors leading-none">
-            BLANC
-          </span>
-          <span className="font-display text-[8px] md:text-[9px] tracking-[0.4em] text-blanc-gold font-light mt-0.5">
-            BELLUNO
-          </span>
+          <Image
+            src="/blanc_belluno_logo.jpg"
+            alt="Blanc Belluno"
+            width={44}
+            height={44}
+            className="rounded-full md:w-11 md:h-11 w-9 h-9"
+          />
+          <div className="flex flex-col items-center justify-center ml-2.5">
+            <span className="font-display text-lg md:text-xl font-light tracking-[0.15em] text-blanc-text-primary group-hover:text-blanc-text-secondary transition-colors leading-none">
+              BLANC
+            </span>
+            <span className="font-display text-[7px] md:text-[8px] tracking-[0.4em] text-blanc-gold font-light mt-0.5">
+              BELLUNO
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}
