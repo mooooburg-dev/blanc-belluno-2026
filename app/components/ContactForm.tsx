@@ -6,6 +6,7 @@ interface SiteSettings {
   instagram: string;
   kakaoChannel: string;
   naverBlog: string;
+  naverSmartStore: string;
   phone: string;
   email: string;
   businessHours: string;
@@ -49,6 +50,7 @@ export default function ContactForm({ settings }: { settings: SiteSettings }) {
   const [form, setForm] = useState<FormData>(initialForm);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -61,9 +63,28 @@ export default function ContactForm({ settings }: { settings: SiteSettings }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    setSubmitted(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "상담 신청에 실패했습니다.");
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "상담 신청에 실패했습니다."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -154,6 +175,14 @@ export default function ContactForm({ settings }: { settings: SiteSettings }) {
                   value={`@${settings.instagram}`}
                   href={`https://instagram.com/${settings.instagram}`}
                   desc="다양한 레퍼런스 확인"
+                />
+              )}
+              {settings.naverSmartStore && (
+                <ContactLink
+                  title="NAVER SMARTSTORE"
+                  value="블랑벨루노 스토어"
+                  href={settings.naverSmartStore}
+                  desc="파티 용품 구매"
                 />
               )}
               {settings.businessHours && (
@@ -282,6 +311,12 @@ export default function ContactForm({ settings }: { settings: SiteSettings }) {
                   />
                 </FormField>
 
+                {error && (
+                  <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 border border-red-200">
+                    {error}
+                  </p>
+                )}
+
                 <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-blanc-champagne/40 mt-2">
                   <p className="font-body text-[10px] uppercase tracking-widest text-blanc-text-muted">
                     * 필수 입력 (Required)
@@ -320,6 +355,32 @@ function FormField({
   );
 }
 
+const channelIcons: Record<string, React.ReactNode> = {
+  "KAKAO CHANNEL": (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path d="M12 3C6.477 3 2 6.463 2 10.691c0 2.724 1.8 5.113 4.508 6.463-.2.744-.723 2.694-.828 3.112-.13.518.19.51.4.372.164-.108 2.61-1.774 3.67-2.492.728.104 1.48.158 2.25.158 5.523 0 10-3.463 10-7.613C22 6.463 17.523 3 12 3z"/>
+    </svg>
+  ),
+  INSTAGRAM: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+      <rect x="2" y="2" width="20" height="20" rx="5"/>
+      <circle cx="12" cy="12" r="5"/>
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+    </svg>
+  ),
+  "NAVER SMARTSTORE": (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path d="M16.273 12.845 7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z"/>
+    </svg>
+  ),
+  HOURS: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  ),
+};
+
 function ContactLink({
   title,
   value,
@@ -331,17 +392,25 @@ function ContactLink({
   desc: string;
   href?: string;
 }) {
+  const icon = channelIcons[title];
   const content = (
-    <div className="group border-l border-blanc-gold pl-5 py-1">
-      <p className="font-display text-[10px] tracking-[0.3em] text-blanc-text-muted uppercase mb-1">
-        {title}
-      </p>
-      <p className="font-body text-sm text-blanc-text-primary tracking-wide mb-1 transition-colors group-hover:text-blanc-text-secondary">
-        {value}
-      </p>
-      <p className="font-body text-[11px] text-blanc-text-muted font-light">
-        {desc}
-      </p>
+    <div className="group flex items-start gap-4">
+      {icon && (
+        <div className="w-8 h-8 rounded-full border border-blanc-champagne flex items-center justify-center shrink-0 text-blanc-gold">
+          {icon}
+        </div>
+      )}
+      <div className="border-l border-blanc-gold pl-5 py-1">
+        <p className="font-display text-[10px] tracking-[0.3em] text-blanc-text-muted uppercase mb-1">
+          {title}
+        </p>
+        <p className="font-body text-sm text-blanc-text-primary tracking-wide mb-1 transition-colors group-hover:text-blanc-text-secondary">
+          {value}
+        </p>
+        <p className="font-body text-[11px] text-blanc-text-muted font-light">
+          {desc}
+        </p>
+      </div>
     </div>
   );
 
