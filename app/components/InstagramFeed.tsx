@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { getInstagramFeed, type InstagramPost } from "@/lib/instagram";
+import Image from 'next/image';
+import { getInstagramFeed, type InstagramPost } from '@/lib/instagram';
 
 interface SiteSettings {
   instagram: string;
@@ -12,12 +12,12 @@ interface SiteSettings {
 }
 
 const placeholderPosts = [
-  { id: 1, gradient: "from-[#f8e8ee] to-[#f2ebe1]" },
-  { id: 2, gradient: "from-[#f2ebe1] to-[#e8eef5]" },
-  { id: 3, gradient: "from-[#e8eef5] to-[#f5f0ea]" },
-  { id: 4, gradient: "from-[#f5f0ea] to-[#f0e2e8]" },
-  { id: 5, gradient: "from-[#f0e2e8] to-[#eedcd4]" },
-  { id: 6, gradient: "from-[#eedcd4] to-[#f8e8ee]" },
+  { id: 1, gradient: 'from-[#f8e8ee] to-[#f2ebe1]' },
+  { id: 2, gradient: 'from-[#f2ebe1] to-[#e8eef5]' },
+  { id: 3, gradient: 'from-[#e8eef5] to-[#f5f0ea]' },
+  { id: 4, gradient: 'from-[#f5f0ea] to-[#f0e2e8]' },
+  { id: 5, gradient: 'from-[#f0e2e8] to-[#eedcd4]' },
+  { id: 6, gradient: 'from-[#eedcd4] to-[#f8e8ee]' },
 ];
 
 export default async function InstagramFeed({
@@ -25,7 +25,7 @@ export default async function InstagramFeed({
 }: {
   settings: SiteSettings;
 }) {
-  const handle = settings.instagram || "blancbelluno";
+  const handle = settings.instagram || 'blancbelluno';
   const posts = await getInstagramFeed(6);
   const hasRealPosts = posts.length > 0;
 
@@ -38,7 +38,7 @@ export default async function InstagramFeed({
             Follow Us
           </span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-light text-blanc-text-primary tracking-tight mb-6">
-            인스타그램에서{" "}
+            인스타그램에서{' '}
             <span className="italic text-blanc-text-secondary">만나요</span>
           </h2>
           <div className="divider-gold" />
@@ -68,9 +68,7 @@ export default async function InstagramFeed({
         {/* Feed Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
           {hasRealPosts
-            ? posts.map((post) => (
-                <RealPost key={post.id} post={post} />
-              ))
+            ? posts.map((post) => <RealPost key={post.id} post={post} />)
             : placeholderPosts.map((post) => (
                 <PlaceholderPost
                   key={post.id}
@@ -99,7 +97,9 @@ export default async function InstagramFeed({
 
 function RealPost({ post }: { post: InstagramPost }) {
   const imageUrl =
-    post.mediaType === "VIDEO" ? post.thumbnailUrl || post.mediaUrl : post.mediaUrl;
+    post.mediaType === 'VIDEO'
+      ? post.thumbnailUrl || post.mediaUrl
+      : post.mediaUrl;
 
   return (
     <a
@@ -110,7 +110,7 @@ function RealPost({ post }: { post: InstagramPost }) {
     >
       <Image
         src={imageUrl}
-        alt={post.caption?.slice(0, 100) || "Instagram post"}
+        alt={post.caption?.slice(0, 100) || 'Instagram post'}
         fill
         sizes="(max-width: 768px) 50vw, 33vw"
         className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -150,7 +150,7 @@ function PlaceholderPost({
 }
 
 function InstagramIcon({
-  className = "",
+  className = '',
   size = 20,
 }: {
   className?: string;
