@@ -3,6 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import StoryViewer from "./StoryViewer";
+
+interface Story {
+  id: string;
+  mediaUrl: string;
+  mediaType: "IMAGE" | "VIDEO";
+  timestamp: string;
+}
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -15,6 +23,9 @@ const navLinks = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [stories, setStories] = useState<Story[]>([]);
+  const [storyOpen, setStoryOpen] = useState(false);
+  const [hasStories, setHasStories] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -33,13 +44,36 @@ export default function Header() {
     };
   }, [menuOpen]);
 
+  // 스토리 데이터 로드
+  useEffect(() => {
+    fetch("/api/instagram/stories")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.stories && data.stories.length > 0) {
+          setStories(data.stories);
+          setHasStories(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const handleNavClick = (href: string) => {
     setMenuOpen(false);
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (hasStories) {
+      e.preventDefault();
+      setStoryOpen(true);
+    } else {
+      handleNavClick("#home");
+    }
+  };
+
   return (
+    <>
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
         scrolled
@@ -48,28 +82,34 @@ export default function Header() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-5 md:px-8 flex items-center justify-between">
-        {/* Logo */}
-        <Link
-          href="#home"
-          onClick={() => handleNavClick("#home")}
-          className="flex items-center group"
-        >
-          <Image
-            src="/blanc_belluno_logo.jpg"
-            alt="Blanc Belluno"
-            width={44}
-            height={44}
-            className="rounded-full md:w-11 md:h-11 w-9 h-9"
-          />
-          <div className="flex flex-col items-center justify-center ml-2.5">
+        {/* Logo with Story Ring */}
+        <div className="flex items-center group">
+          <button
+            onClick={handleLogoClick}
+            className={`relative cursor-pointer rounded-full ${hasStories ? "story-ring" : ""}`}
+            aria-label={hasStories ? "스토리 보기" : "홈으로 이동"}
+          >
+            <Image
+              src="/blanc_belluno_logo.jpg"
+              alt="Blanc Belluno"
+              width={44}
+              height={44}
+              className="rounded-full md:w-11 md:h-11 w-9 h-9 relative z-1"
+            />
+          </button>
+          <Link
+            href="#home"
+            onClick={() => handleNavClick("#home")}
+            className="flex flex-col items-center justify-center ml-2.5"
+          >
             <span className="font-display text-lg md:text-xl font-light tracking-[0.15em] text-blanc-text-primary group-hover:text-blanc-text-secondary transition-colors leading-none">
               BLANC
             </span>
             <span className="font-display text-[7px] md:text-[8px] tracking-[0.4em] text-blanc-gold font-light mt-0.5">
               BELLUNO
             </span>
-          </div>
-        </Link>
+          </Link>
+        </div>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
@@ -141,5 +181,12 @@ export default function Header() {
         </nav>
       </div>
     </header>
+
+    <StoryViewer
+      isOpen={storyOpen}
+      onClose={() => setStoryOpen(false)}
+      stories={stories}
+    />
+    </>
   );
 }

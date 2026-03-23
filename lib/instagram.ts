@@ -51,6 +51,59 @@ export async function getInstagramFeed(
   }
 }
 
+export interface InstagramStory {
+  id: string;
+  mediaUrl: string;
+  mediaType: "IMAGE" | "VIDEO";
+  timestamp: string;
+}
+
+export async function getInstagramStories(): Promise<InstagramStory[]> {
+  const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
+
+  if (!accessToken) {
+    console.warn("INSTAGRAM_ACCESS_TOKEN이 설정되지 않았습니다.");
+    return [];
+  }
+
+  try {
+    // 1. 사용자 ID 가져오기
+    const meRes = await fetch(
+      `${INSTAGRAM_GRAPH_API}/me?fields=id&access_token=${accessToken}`,
+      { next: { revalidate: 3600 } }
+    );
+    if (!meRes.ok) return [];
+    const meData = await meRes.json();
+    const userId = meData.id;
+
+    // 2. 스토리 목록 가져오기
+    const storiesRes = await fetch(
+      `${INSTAGRAM_GRAPH_API}/${userId}/stories?fields=id,media_url,media_type,timestamp&access_token=${accessToken}`,
+      { next: { revalidate: 300 } }
+    );
+
+    if (!storiesRes.ok) {
+      const error = await storiesRes.json().catch(() => ({}));
+      console.error("Instagram Stories API 에러:", error);
+      return [];
+    }
+
+    const data = await storiesRes.json();
+
+    return (data.data || []).map(
+      (story: Record<string, string>): InstagramStory => ({
+        id: story.id,
+        mediaUrl: story.media_url,
+        mediaType: story.media_type as InstagramStory["mediaType"],
+        timestamp: story.timestamp,
+      })
+    );
+  } catch (error) {
+    console.error("Instagram 스토리 가져오기 실패:", error);
+    return [];
+  }
+}
+
 /**
  * 장기 토큰 갱신 (60일마다 필요)
  * 크론잡이나 수동으로 호출

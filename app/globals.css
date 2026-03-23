@@ -200,3 +200,32 @@ body {
 .input-belluno::placeholder {
   color: var(--color-text-muted);
 }
+
+/* Instagram Story Ring — matches Instagram's actual gradient */
+.story-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 2.5px;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 180deg,
+    #feda75 0%,
+    #fa7e1e 12.5%,
+    #d62976 25%,
+    #962fbf 50%,
+    #4f5bd5 75%,
+    #feda75 100%
+  );
+  transition: transform 0.3s ease;
+}
+
+.story-ring:hover {
+  transform: scale(1.06);
+}
+
+.story-ring img {
+  border: 2px solid white !important;
+  border-radius: 9999px;
+}
