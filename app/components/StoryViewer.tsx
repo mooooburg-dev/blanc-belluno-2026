@@ -31,6 +31,8 @@ export default function StoryViewer({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(0);
   const elapsedRef = useRef(0);
+  const longPressRef = useRef(false);
+  const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const goNext = useCallback(() => {
     if (currentIndex < stories.length - 1) {
@@ -107,78 +109,117 @@ export default function StoryViewer({
     };
   }, [isOpen]);
 
+  // 다음 2개 이미지 프리로딩
+  useEffect(() => {
+    if (!isOpen || stories.length === 0) return;
+
+    for (let offset = 1; offset <= 2; offset++) {
+      const nextIndex = currentIndex + offset;
+      if (nextIndex < stories.length) {
+        const nextStory = stories[nextIndex];
+        if (nextStory.mediaType === "IMAGE") {
+          const img = new window.Image();
+          img.src = nextStory.mediaUrl;
+        }
+      }
+    }
+  }, [isOpen, currentIndex, stories]);
+
   if (!isOpen || stories.length === 0) return null;
 
   const currentStory = stories[currentIndex];
   const storyTime = new Date(currentStory.timestamp);
   const timeAgo = getTimeAgo(storyTime);
 
-  return (
-    <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center">
-      {/* 닫기 버튼 */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-10 text-white/80 hover:text-white transition-colors cursor-pointer"
-        aria-label="닫기"
-      >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-      </button>
+  const pauseTimer = () => {
+    setIsPaused(true);
+    elapsedRef.current = Date.now() - startTimeRef.current;
+  };
 
+  const resumeTimer = () => {
+    setIsPaused(false);
+  };
+
+  // 모바일 터치: 길게 누르면 일시정지, 짧게 탭하면 이전/다음
+  const handleTouchStart = (side: "left" | "right") => {
+    longPressRef.current = false;
+    touchTimerRef.current = setTimeout(() => {
+      longPressRef.current = true;
+      pauseTimer();
+    }, 150);
+  };
+
+  const handleTouchEnd = (side: "left" | "right") => {
+    if (touchTimerRef.current) clearTimeout(touchTimerRef.current);
+    if (longPressRef.current) {
+      resumeTimer();
+    } else {
+      side === "left" ? goPrev() : goNext();
+    }
+    longPressRef.current = false;
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+      onClick={(e) => {
+        // PC: 검정 배경(콘텐츠 영역 바깥) 클릭 시 닫기
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       {/* 메인 콘텐츠 영역 */}
       <div className="relative w-full h-full max-w-[420px] max-h-[90vh] mx-auto flex flex-col">
-        {/* 상단 진행 바 */}
-        <div className="flex gap-1 px-3 pt-3 pb-2 z-10">
-          {stories.map((_, i) => (
-            <div key={i} className="flex-1 h-[2px] bg-white/30 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-white rounded-full transition-none"
-                style={{
-                  width:
-                    i < currentIndex
-                      ? "100%"
-                      : i === currentIndex
-                        ? `${progress * 100}%`
-                        : "0%",
-                }}
-              />
-            </div>
-          ))}
-        </div>
+        {/* 상단: 진행 바 + 프로필 + 닫기 버튼 */}
+        <div className="relative z-20 px-3 pt-3">
+          {/* 진행 바 */}
+          <div className="flex gap-1 pb-2">
+            {stories.map((_, i) => (
+              <div key={i} className="flex-1 h-[2px] bg-white/30 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-white rounded-full transition-none"
+                  style={{
+                    width:
+                      i < currentIndex
+                        ? "100%"
+                        : i === currentIndex
+                          ? `${progress * 100}%`
+                          : "0%",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
 
-        {/* 프로필 정보 */}
-        <div className="flex items-center gap-2.5 px-3 pb-3 z-10">
-          <Image
-            src="/blanc_belluno_logo.jpg"
-            alt="Blanc Belluno"
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
-          <span className="text-white text-xs font-medium tracking-wide">
-            blancbelluno
-          </span>
-          <span className="text-white/50 text-xs">{timeAgo}</span>
+          {/* 프로필 + 닫기 */}
+          <div className="flex items-center gap-2.5 pb-2">
+            <Image
+              src="/blanc_belluno_logo.jpg"
+              alt="Blanc Belluno"
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
+            <span className="text-white text-xs font-medium tracking-wide">
+              blancbelluno
+            </span>
+            <span className="text-white/50 text-xs">{timeAgo}</span>
+            <button
+              onClick={onClose}
+              className="ml-auto p-2 -mr-2 text-white/80 hover:text-white transition-colors cursor-pointer"
+              aria-label="닫기"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* 스토리 미디어 */}
-        <div
-          className="relative flex-1 overflow-hidden rounded-sm bg-black"
-          onMouseDown={() => {
-            setIsPaused(true);
-            elapsedRef.current = Date.now() - startTimeRef.current;
-          }}
-          onMouseUp={() => setIsPaused(false)}
-          onTouchStart={() => {
-            setIsPaused(true);
-            elapsedRef.current = Date.now() - startTimeRef.current;
-          }}
-          onTouchEnd={() => setIsPaused(false)}
-        >
+        <div className="relative flex-1 overflow-hidden rounded-sm bg-black">
           {/* 로딩 스피너 */}
           {!mediaLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center z-2">
+            <div className="absolute inset-0 flex items-center justify-center z-[5]">
               <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             </div>
           )}
@@ -206,15 +247,24 @@ export default function StoryViewer({
             />
           )}
 
-          {/* 좌/우 탭 영역 */}
-          <button
-            className="absolute left-0 top-0 w-1/3 h-full cursor-pointer z-10"
+          {/* 좌측 탭 영역 */}
+          <div
+            className="absolute left-0 top-0 w-1/3 h-full z-10 cursor-pointer"
             onClick={goPrev}
+            onMouseDown={pauseTimer}
+            onMouseUp={resumeTimer}
+            onTouchStart={() => handleTouchStart("left")}
+            onTouchEnd={() => handleTouchEnd("left")}
             aria-label="이전 스토리"
           />
-          <button
-            className="absolute right-0 top-0 w-2/3 h-full cursor-pointer z-10"
+          {/* 우측 탭 영역 */}
+          <div
+            className="absolute right-0 top-0 w-2/3 h-full z-10 cursor-pointer"
             onClick={goNext}
+            onMouseDown={pauseTimer}
+            onMouseUp={resumeTimer}
+            onTouchStart={() => handleTouchStart("right")}
+            onTouchEnd={() => handleTouchEnd("right")}
             aria-label="다음 스토리"
           />
         </div>
