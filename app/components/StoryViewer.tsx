@@ -291,8 +291,9 @@ export default function StoryViewer({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-100 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center"
       style={{
+        zIndex: 100,
         backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})`,
         touchAction: "none",
       }}
