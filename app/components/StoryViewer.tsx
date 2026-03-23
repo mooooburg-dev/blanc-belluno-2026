@@ -33,6 +33,7 @@ export default function StoryViewer({
   const elapsedRef = useRef(0);
   const longPressRef = useRef(false);
   const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isTouchRef = useRef(false);
 
   const goNext = useCallback(() => {
     if (currentIndex < stories.length - 1) {
@@ -141,7 +142,8 @@ export default function StoryViewer({
   };
 
   // 모바일 터치: 길게 누르면 일시정지, 짧게 탭하면 이전/다음
-  const handleTouchStart = (side: "left" | "right") => {
+  const handleTouchStart = () => {
+    isTouchRef.current = true;
     longPressRef.current = false;
     touchTimerRef.current = setTimeout(() => {
       longPressRef.current = true;
@@ -157,6 +159,15 @@ export default function StoryViewer({
       side === "left" ? goPrev() : goNext();
     }
     longPressRef.current = false;
+  };
+
+  // PC에서만 onClick 처리 (터치 디바이스에서는 무시)
+  const handleClick = (side: "left" | "right") => {
+    if (isTouchRef.current) {
+      isTouchRef.current = false;
+      return;
+    }
+    side === "left" ? goPrev() : goNext();
   };
 
   return (
@@ -250,20 +261,20 @@ export default function StoryViewer({
           {/* 좌측 탭 영역 */}
           <div
             className="absolute left-0 top-0 w-1/3 h-full z-10 cursor-pointer"
-            onClick={goPrev}
+            onClick={() => handleClick("left")}
             onMouseDown={pauseTimer}
             onMouseUp={resumeTimer}
-            onTouchStart={() => handleTouchStart("left")}
+            onTouchStart={handleTouchStart}
             onTouchEnd={() => handleTouchEnd("left")}
             aria-label="이전 스토리"
           />
           {/* 우측 탭 영역 */}
           <div
             className="absolute right-0 top-0 w-2/3 h-full z-10 cursor-pointer"
-            onClick={goNext}
+            onClick={() => handleClick("right")}
             onMouseDown={pauseTimer}
             onMouseUp={resumeTimer}
-            onTouchStart={() => handleTouchStart("right")}
+            onTouchStart={handleTouchStart}
             onTouchEnd={() => handleTouchEnd("right")}
             aria-label="다음 스토리"
           />
