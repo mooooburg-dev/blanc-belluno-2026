@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   DndContext,
   closestCenter,
@@ -16,7 +17,9 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   rectSortingStrategy,
+  useSortable,
 } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import SortableItem from "./SortableItem";
 
 const CATEGORIES = ["WEDDING", "BABY SHOWER", "PARTY", "CORPORATE"] as const;
@@ -44,7 +47,7 @@ interface SiteSettings {
   brandDescription: string;
 }
 
-type Tab = "portfolio" | "settings";
+type Tab = "portfolio" | "hero" | "settings";
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("portfolio");
@@ -66,6 +69,12 @@ export default function AdminPage() {
                 포트폴리오
               </TabButton>
               <TabButton
+                active={tab === "hero"}
+                onClick={() => setTab("hero")}
+              >
+                히어로 슬라이드
+              </TabButton>
+              <TabButton
                 active={tab === "settings"}
                 onClick={() => setTab("settings")}
               >
@@ -83,7 +92,13 @@ export default function AdminPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {tab === "portfolio" ? <PortfolioTab /> : <SettingsTab />}
+        {tab === "portfolio" ? (
+          <PortfolioTab />
+        ) : tab === "hero" ? (
+          <HeroSlidesTab />
+        ) : (
+          <SettingsTab />
+        )}
       </main>
     </div>
   );
@@ -375,6 +390,265 @@ function FilterButton({
     >
       {children}
     </button>
+  );
+}
+
+/* ─── Hero Slides Tab ─── */
+
+interface HeroSlide {
+  id: string;
+  filename: string;
+  originalName: string;
+  order: number;
+  objectPosition: string;
+  imageUrl: string;
+}
+
+function HeroSlidesTab() {
+  const [slides, setSlides] = useState<HeroSlide[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const fetchSlides = useCallback(async () => {
+    const res = await fetch("/api/hero-slides");
+    const data = await res.json();
+    setSlides(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    void fetchSlides();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append("file", file);
+      await fetch("/api/hero-slides", { method: "POST", body: formData });
+    }
+    await fetchSlides();
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("이 슬라이드를 삭제하시겠습니까?")) return;
+    await fetch("/api/hero-slides", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    await fetchSlides();
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = slides.findIndex((i) => i.id === active.id);
+    const newIndex = slides.findIndex((i) => i.id === over.id);
+    const newSlides = arrayMove(slides, oldIndex, newIndex);
+    setSlides(newSlides);
+
+    await fetch("/api/hero-slides", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderedIds: newSlides.map((i) => i.id) }),
+    });
+  };
+
+  return (
+    <>
+      {/* 안내 */}
+      <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h3 className="text-sm font-semibold text-blue-900 mb-1">
+          히어로 슬라이드 이미지
+        </h3>
+        <p className="text-xs text-blue-700 leading-relaxed">
+          메인 화면 상단 배너에 표시되는 슬라이드 이미지를 관리합니다.
+          <br />
+          최적 이미지 사이즈: <strong>1920 x 1080px</strong> (16:9 비율) 이상,
+          가로형 권장. 세로 사진은 상하가 크롭됩니다.
+          <br />
+          드래그하여 슬라이드 순서를 변경할 수 있습니다.
+        </p>
+      </div>
+
+      {/* Upload */}
+      <div className="mb-8 bg-white rounded-lg border border-gray-200 p-6">
+        <h2 className="text-sm font-semibold text-gray-900 mb-4">
+          슬라이드 추가
+        </h2>
+        <div className="flex items-end gap-4">
+          <div className="flex-1">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              multiple
+              onChange={handleUpload}
+              className="hidden"
+              id="hero-file-upload"
+            />
+            <label
+              htmlFor="hero-file-upload"
+              className="w-full cursor-pointer flex items-center justify-center gap-2 bg-gray-900 text-white text-sm font-medium rounded-md px-4 py-2.5 hover:bg-gray-800 transition-colors"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              {uploading ? "업로드 중..." : "이미지 추가"}
+            </label>
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mt-3">
+          JPG, PNG, GIF, WebP (여러 장 선택 가능). 권장 사이즈: 1920 x 1080px (16:9)
+        </p>
+      </div>
+
+      {/* Slides grid */}
+      {loading ? (
+        <div className="text-center text-gray-500 py-20">로딩 중...</div>
+      ) : slides.length === 0 ? (
+        <div className="text-center text-gray-400 py-20">
+          아직 히어로 슬라이드가 없습니다. 이미지를 추가해주세요.
+        </div>
+      ) : (
+        <>
+          <p className="text-xs text-gray-500 mb-4">
+            드래그하여 순서를 변경할 수 있습니다. 총 {slides.length}장
+          </p>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={slides.map((i) => i.id)}
+              strategy={rectSortingStrategy}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {slides.map((slide, index) => (
+                  <HeroSortableItem
+                    key={slide.id}
+                    slide={slide}
+                    index={index}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </>
+      )}
+    </>
+  );
+}
+
+function HeroSortableItem({
+  slide,
+  index,
+  onDelete,
+}: {
+  slide: HeroSlide;
+  index: number;
+  onDelete: (id: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: slide.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative group border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm ${
+        isDragging ? "z-50 shadow-lg" : ""
+      }`}
+    >
+      {/* 순서 번호 */}
+      <div className="absolute top-2 left-2 z-10 bg-black/60 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+        {index + 1}
+      </div>
+
+      {/* Drag handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 left-10 z-10 cursor-grab active:cursor-grabbing bg-black/50 text-white rounded p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+        title="드래그하여 순서 변경"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <circle cx="5" cy="3" r="1.5" />
+          <circle cx="11" cy="3" r="1.5" />
+          <circle cx="5" cy="8" r="1.5" />
+          <circle cx="11" cy="8" r="1.5" />
+          <circle cx="5" cy="13" r="1.5" />
+          <circle cx="11" cy="13" r="1.5" />
+        </svg>
+      </div>
+
+      {/* Delete button */}
+      <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={() => onDelete(slide.id)}
+          className="bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center"
+          title="삭제"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Image — 16:9 비율 프리뷰 */}
+      <div className="aspect-video relative">
+        <Image
+          src={slide.imageUrl}
+          alt={slide.originalName}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
+      </div>
+
+      {/* Info */}
+      <div className="p-2 border-t border-gray-100">
+        <p className="text-xs text-gray-600 truncate">{slide.originalName}</p>
+      </div>
+    </div>
   );
 }
 
