@@ -13,10 +13,10 @@
 
 ```bash
 # 의존성 설치
-npm install
+yarn install
 
 # 개발 서버 실행
-npm run dev
+yarn dev
 ```
 
 [http://localhost:3000](http://localhost:3000)에서 확인할 수 있습니다.
@@ -37,6 +37,7 @@ INSTAGRAM_USER_ID=
 KAKAO_REST_API_KEY=
 KAKAO_ALIMTALK_SENDER_KEY=
 KAKAO_ALIMTALK_TEMPLATE_CODE=
+ADMIN_PHONE=
 ```
 
 ## 주요 기능
@@ -48,10 +49,10 @@ KAKAO_ALIMTALK_TEMPLATE_CODE=
 ## 명령어
 
 ```bash
-npm run dev      # 개발 서버
-npm run build    # 프로덕션 빌드
-npm start        # 프로덕션 서버
-npm run lint     # ESLint 검사
+yarn dev         # 개발 서버
+yarn build       # 프로덕션 빌드
+yarn start       # 프로덕션 서버
+yarn lint        # ESLint 검사
 ```
 
 ## 배포
