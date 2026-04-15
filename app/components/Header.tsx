@@ -154,28 +154,36 @@ export default function Header() {
           </button>
         </nav>
 
-        {/* Mobile Hamburger */}
-        <button
-          className="md:hidden relative z-10 flex h-8 w-8 cursor-pointer flex-col items-center justify-center"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="메뉴 열기"
-        >
-          <span
-            className={`block absolute w-5 h-px bg-blanc-text-primary transition-transform duration-300 ease-in-out ${
-              menuOpen ? "rotate-45" : "-translate-y-1.5"
-            }`}
-          />
-          <span
-            className={`block absolute w-5 h-px bg-blanc-text-primary transition-opacity duration-300 ease-in-out ${
-              menuOpen ? "opacity-0" : "opacity-100"
-            }`}
-          />
-          <span
-            className={`block absolute w-5 h-px bg-blanc-text-primary transition-transform duration-300 ease-in-out ${
-              menuOpen ? "-rotate-45" : "translate-y-1.5"
-            }`}
-          />
-        </button>
+        {/* Mobile Actions */}
+        <div className="md:hidden flex items-center gap-3">
+          <button
+            onClick={() => handleNavClick("#contact")}
+            className="font-body text-[10px] tracking-[0.12em] text-white bg-blanc-text-primary hover:bg-black px-3.5 py-2 transition-colors uppercase"
+          >
+            상담하기
+          </button>
+          <button
+            className="relative z-10 flex h-8 w-8 cursor-pointer flex-col items-center justify-center"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+          >
+            <span
+              className={`block absolute w-5 h-px bg-blanc-text-primary transition-transform duration-300 ease-in-out ${
+                menuOpen ? "rotate-45" : "-translate-y-1.5"
+              }`}
+            />
+            <span
+              className={`block absolute w-5 h-px bg-blanc-text-primary transition-opacity duration-300 ease-in-out ${
+                menuOpen ? "opacity-0" : "opacity-100"
+              }`}
+            />
+            <span
+              className={`block absolute w-5 h-px bg-blanc-text-primary transition-transform duration-300 ease-in-out ${
+                menuOpen ? "-rotate-45" : "translate-y-1.5"
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
     </header>
