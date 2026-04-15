@@ -33,6 +33,7 @@ interface PortfolioItem {
   category: Category;
   title: string;
   tag: string;
+  linkUrl: string;
   imageUrl: string;
 }
 
@@ -148,6 +149,7 @@ function PortfolioTab() {
   const [uploadCategory, setUploadCategory] = useState<Category>("PARTY");
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadTag, setUploadTag] = useState("");
+  const [uploadLinkUrl, setUploadLinkUrl] = useState("");
   const [filterCategory, setFilterCategory] = useState<Category | "ALL">("ALL");
   const [dragOverUpload, setDragOverUpload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -179,12 +181,14 @@ function PortfolioTab() {
       formData.append("category", uploadCategory);
       formData.append("title", uploadTitle);
       formData.append("tag", uploadTag);
+      formData.append("linkUrl", uploadLinkUrl);
       await fetch("/api/portfolio", { method: "POST", body: formData });
     }
     await fetchItems();
     setUploading(false);
     setUploadTitle("");
     setUploadTag("");
+    setUploadLinkUrl("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -214,7 +218,7 @@ function PortfolioTab() {
 
   const handleUpdate = async (
     id: string,
-    updates: Partial<Pick<PortfolioItem, "category" | "title" | "tag">>
+    updates: Partial<Pick<PortfolioItem, "category" | "title" | "tag" | "linkUrl">>
   ) => {
     await fetch("/api/portfolio", {
       method: "PATCH",
@@ -289,6 +293,22 @@ function PortfolioTab() {
               className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-stone-900 focus:border-stone-900 outline-none transition-shadow"
             />
           </div>
+        </div>
+
+        <div className="mb-5">
+          <label className="block text-xs font-medium text-stone-500 mb-1.5">
+            링크 주소 (선택)
+            <span className="ml-1.5 text-stone-400 font-normal">
+              클릭 시 이동할 외부 URL (예: 블로그 포스팅)
+            </span>
+          </label>
+          <input
+            type="url"
+            value={uploadLinkUrl}
+            onChange={(e) => setUploadLinkUrl(e.target.value)}
+            placeholder="https://blog.naver.com/blancbelluno/..."
+            className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-stone-900 focus:border-stone-900 outline-none transition-shadow"
+          />
         </div>
 
         {/* Drop zone */}

@@ -17,6 +17,7 @@ export interface PortfolioItem {
   category: Category;
   title: string;
   tag: string;
+  linkUrl: string;
   createdAt: string;
   imageUrl: string;
 }
@@ -29,6 +30,7 @@ interface PortfolioRow {
   category: string;
   title: string;
   tag: string;
+  link_url: string | null;
   created_at: string;
 }
 
@@ -41,6 +43,7 @@ function toPortfolioItem(row: PortfolioRow): PortfolioItem {
     category: row.category as Category,
     title: row.title,
     tag: row.tag,
+    linkUrl: row.link_url || "",
     createdAt: row.created_at,
     imageUrl: getStorageUrl(row.filename),
   };
@@ -87,6 +90,7 @@ export async function addPortfolioItem(
       category: item.category,
       title: item.title,
       tag: item.tag,
+      link_url: item.linkUrl || null,
     })
     .select()
     .single();
@@ -101,13 +105,19 @@ export async function addPortfolioItem(
 
 export async function updatePortfolioItem(
   id: string,
-  updates: Partial<Pick<PortfolioItem, "category" | "title" | "tag">>
+  updates: Partial<Pick<PortfolioItem, "category" | "title" | "tag" | "linkUrl">>
 ): Promise<PortfolioItem | null> {
   if (!supabase) return null;
 
+  const dbUpdates: Record<string, string | null> = {};
+  if (updates.category !== undefined) dbUpdates.category = updates.category;
+  if (updates.title !== undefined) dbUpdates.title = updates.title;
+  if (updates.tag !== undefined) dbUpdates.tag = updates.tag;
+  if (updates.linkUrl !== undefined) dbUpdates.link_url = updates.linkUrl || null;
+
   const { data, error } = await supabase
     .from("belluno_portfolio")
-    .update(updates)
+    .update(dbUpdates)
     .eq("id", id)
     .select()
     .single();

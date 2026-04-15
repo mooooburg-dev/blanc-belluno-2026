@@ -11,6 +11,7 @@ interface PortfolioItem {
   category: string;
   title: string;
   tag: string;
+  linkUrl: string;
   imageUrl: string;
 }
 
@@ -119,11 +120,8 @@ export default function Gallery({ items }: { items: PortfolioItem[] }) {
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {hasRealItems
-            ? filteredReal.map((item) => (
-                <div
-                  key={item.id}
-                  className="group relative overflow-hidden bg-blanc-surface"
-                >
+            ? filteredReal.map((item) => {
+                const content = (
                   <div className="w-full aspect-[4/5] relative overflow-hidden">
                     <Image
                       src={item.imageUrl}
@@ -146,8 +144,26 @@ export default function Gallery({ items }: { items: PortfolioItem[] }) {
                       </p>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+                return item.linkUrl ? (
+                  <a
+                    key={item.id}
+                    href={item.linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative overflow-hidden bg-blanc-surface block"
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <div
+                    key={item.id}
+                    className="group relative overflow-hidden bg-blanc-surface"
+                  >
+                    {content}
+                  </div>
+                );
+              })
             : filteredPlaceholder.map((item) => (
                 <div
                   key={item.id}

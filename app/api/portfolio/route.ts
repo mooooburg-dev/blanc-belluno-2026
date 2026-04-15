@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
   const category = (formData.get("category") as Category) || "PARTY";
   const title = (formData.get("title") as string) || "";
   const tag = (formData.get("tag") as string) || "";
+  const linkUrl = (formData.get("linkUrl") as string) || "";
 
   const ext = file.name.split(".").pop() || "jpg";
   const filename = `${uuidv4()}.${ext}`;
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
     category,
     title,
     tag,
+    linkUrl,
     createdAt: new Date().toISOString(),
   });
 
@@ -72,13 +74,13 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   const body = await request.json();
-  const { id, category, title, tag } = body;
+  const { id, category, title, tag, linkUrl } = body;
 
   if (!id) {
     return NextResponse.json({ error: "Missing id" }, { status: 400 });
   }
 
-  const item = await updatePortfolioItem(id, { category, title, tag });
+  const item = await updatePortfolioItem(id, { category, title, tag, linkUrl });
   if (!item) {
     return NextResponse.json({ error: "Item not found" }, { status: 404 });
   }

@@ -16,6 +16,7 @@ interface PortfolioItem {
   category: Category;
   title: string;
   tag: string;
+  linkUrl: string;
   imageUrl: string;
 }
 
@@ -24,7 +25,7 @@ interface SortableItemProps {
   onDelete: (id: string) => void;
   onUpdate: (
     id: string,
-    updates: Partial<Pick<PortfolioItem, "category" | "title" | "tag">>
+    updates: Partial<Pick<PortfolioItem, "category" | "title" | "tag" | "linkUrl">>
   ) => void;
 }
 
@@ -37,6 +38,7 @@ export default function SortableItem({
   const [editCategory, setEditCategory] = useState<Category>(item.category);
   const [editTitle, setEditTitle] = useState(item.title);
   const [editTag, setEditTag] = useState(item.tag);
+  const [editLinkUrl, setEditLinkUrl] = useState(item.linkUrl);
 
   const {
     attributes,
@@ -58,6 +60,7 @@ export default function SortableItem({
       category: editCategory,
       title: editTitle,
       tag: editTag,
+      linkUrl: editLinkUrl,
     });
     setEditing(false);
   };
@@ -66,6 +69,7 @@ export default function SortableItem({
     setEditCategory(item.category);
     setEditTitle(item.title);
     setEditTag(item.tag);
+    setEditLinkUrl(item.linkUrl);
     setEditing(false);
   };
 
@@ -155,6 +159,13 @@ export default function SortableItem({
             placeholder="태그"
             className="w-full border border-stone-200 rounded-lg px-2 py-1.5 text-xs focus:ring-2 focus:ring-stone-900 focus:border-stone-900 outline-none"
           />
+          <input
+            type="url"
+            value={editLinkUrl}
+            onChange={(e) => setEditLinkUrl(e.target.value)}
+            placeholder="링크 URL (선택)"
+            className="w-full border border-stone-200 rounded-lg px-2 py-1.5 text-xs focus:ring-2 focus:ring-stone-900 focus:border-stone-900 outline-none"
+          />
           <div className="flex gap-1.5">
             <button
               onClick={handleSave}
@@ -172,9 +183,22 @@ export default function SortableItem({
         </div>
       ) : (
         <div className="px-2.5 py-2 border-t border-stone-100">
-          <span className="inline-block text-[10px] font-medium text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded-md mb-1">
-            {item.category}
-          </span>
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="inline-block text-[10px] font-medium text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded-md">
+              {item.category}
+            </span>
+            {item.linkUrl && (
+              <span
+                className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md"
+                title={item.linkUrl}
+              >
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                링크
+              </span>
+            )}
+          </div>
           <p className="text-xs text-stone-700 truncate">
             {item.title || item.originalName}
           </p>
