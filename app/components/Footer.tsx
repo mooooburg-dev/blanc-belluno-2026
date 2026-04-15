@@ -135,9 +135,29 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
-          <p className="font-body text-[10px] uppercase tracking-widest text-blanc-champagne/35">
-            &copy; {currentYear} Blanc Belluno. All rights reserved.
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="font-body text-[10px] uppercase tracking-widest text-blanc-champagne/35">
+              &copy; {currentYear} Blanc Belluno. All rights reserved.
+            </p>
+            <Link
+              href="/admin"
+              aria-label="관리자 페이지"
+              className="text-blanc-champagne/20 hover:text-blanc-gold transition-colors duration-300"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-3 h-3"
+              >
+                <rect x="4" y="11" width="16" height="10" rx="2" />
+                <path d="M8 11V7a4 4 0 018 0v4" />
+              </svg>
+            </Link>
+          </div>
           <p className="font-display text-[11px] tracking-[0.15em] italic text-blanc-gold/50">
             Making every moment beautiful
           </p>
