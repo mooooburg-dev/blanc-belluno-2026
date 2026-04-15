@@ -2,7 +2,7 @@ export const SITE_URL = "https://blanc-belluno.com";
 
 // 발급받은 검증 토큰 값을 여기에 붙여넣으세요. 빈 문자열이면 메타태그가 출력되지 않습니다.
 export const GOOGLE_SITE_VERIFICATION = "";
-export const NAVER_SITE_VERIFICATION = "";
+export const NAVER_SITE_VERIFICATION = "ab0ab7b208933cec2fe498e9e7f57f8e07dd27c8";
 
 export const SITE_NAME = "Blanc Belluno";
 export const SITE_NAME_KO = "블랑벨루노";
