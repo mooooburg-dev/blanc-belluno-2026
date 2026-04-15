@@ -84,6 +84,11 @@ export default function ContactForm({ settings }: { settings: SiteSettings }) {
       }
 
       setSubmitted(true);
+      requestAnimationFrame(() => {
+        document
+          .getElementById("contact")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "상담 신청에 실패했습니다."
