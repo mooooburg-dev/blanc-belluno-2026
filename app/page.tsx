@@ -5,6 +5,7 @@ import Gallery from "./components/Gallery";
 import InstagramFeed from "./components/InstagramFeed";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
+import JsonLd from "./components/JsonLd";
 import { getPortfolioItems } from "@/lib/portfolio";
 import { getSettings } from "@/lib/settings";
 import { getHeroSlides } from "@/lib/hero-slides";
@@ -18,6 +19,11 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd
+        phone={settings.phone}
+        instagram={settings.instagram}
+        naverBlog={settings.naverBlog}
+      />
       <Header />
       <main>
         <Hero slides={heroSlides} />

@@ -1,6 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_KEYWORDS,
+  DEFAULT_TITLE,
+  GOOGLE_SITE_VERIFICATION,
+  NAVER_SITE_VERIFICATION,
+  SITE_NAME,
+  SITE_NAME_KO,
+  SITE_URL,
+} from "@/lib/seo";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -16,30 +26,67 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "Blanc Belluno | 블랑벨루노 — 풍선 장식 & 이벤트 스타일링",
-  description:
-    "블랑벨루노는 생일파티, 웨딩, 돌잔치, 베이비샤워 등 소중한 날을 더욱 빛나게 만드는 프리미엄 풍선 장식 전문 브랜드입니다.",
-  keywords: [
-    "풍선장식",
-    "이벤트풍선",
-    "생일파티",
-    "웨딩풍선",
-    "돌잔치",
-    "베이비샤워",
-    "블랑벨루노",
-    "Blanc Belluno",
-  ],
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME} ${SITE_NAME_KO}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  keywords: DEFAULT_KEYWORDS,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: "lifestyle",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Blanc Belluno | 블랑벨루노",
-    description:
-      "당신의 특별한 날을 더욱 빛나게 — 프리미엄 풍선 장식 & 이벤트 스타일링",
     type: "website",
-    images: [{ url: "/blanc_belluno_logo.jpg", width: 800, height: 800 }],
+    locale: "ko_KR",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [
+      {
+        url: "/blanc_belluno_logo.jpg",
+        width: 800,
+        height: 800,
+        alt: `${SITE_NAME} ${SITE_NAME_KO} 로고`,
+      },
+    ],
   },
-  icons: {
-    icon: "/blanc_belluno_logo.jpg",
-    apple: "/blanc_belluno_logo.jpg",
+  twitter: {
+    card: "summary_large_image",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: ["/blanc_belluno_logo.jpg"],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  verification: {
+    ...(GOOGLE_SITE_VERIFICATION ? { google: GOOGLE_SITE_VERIFICATION } : {}),
+    ...(NAVER_SITE_VERIFICATION
+      ? { other: { "naver-site-verification": NAVER_SITE_VERIFICATION } }
+      : {}),
+  },
+  manifest: "/manifest.webmanifest",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
