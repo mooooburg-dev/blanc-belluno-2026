@@ -2,6 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+const ADMIN_PASSWORD = "998401";
+const ADMIN_AUTH_KEY = "blanc_belluno_admin_auth";
 
 interface SiteSettings {
   instagram: string;
@@ -16,10 +20,27 @@ interface SiteSettings {
 
 export default function Footer({ settings }: { settings: SiteSettings }) {
   const currentYear = new Date().getFullYear();
+  const router = useRouter();
 
   const scrollTo = (href: string) => {
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleAdminClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (localStorage.getItem(ADMIN_AUTH_KEY) === "1") {
+      router.push("/admin");
+      return;
+    }
+    const input = window.prompt("관리자 비밀번호를 입력하세요");
+    if (input === null) return;
+    if (input === ADMIN_PASSWORD) {
+      localStorage.setItem(ADMIN_AUTH_KEY, "1");
+      router.push("/admin");
+    } else {
+      window.alert("비밀번호가 올바르지 않습니다.");
+    }
   };
 
   return (
@@ -139,8 +160,9 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             <p className="font-body text-[10px] uppercase tracking-widest text-blanc-champagne/35">
               &copy; {currentYear} Blanc Belluno. All rights reserved.
             </p>
-            <Link
-              href="/admin"
+            <button
+              type="button"
+              onClick={handleAdminClick}
               aria-label="관리자 페이지"
               className="text-blanc-champagne/20 hover:text-blanc-gold transition-colors duration-300"
             >
@@ -156,7 +178,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
                 <rect x="4" y="11" width="16" height="10" rx="2" />
                 <path d="M8 11V7a4 4 0 018 0v4" />
               </svg>
-            </Link>
+            </button>
           </div>
           <p className="font-display text-[11px] tracking-[0.15em] italic text-blanc-gold/50">
             Making every moment beautiful
