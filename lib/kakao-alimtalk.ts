@@ -74,7 +74,7 @@ async function sendAlimtalk(
   try {
     await client.sendOne({
       to: normalizePhone(to),
-      from: normalizePhone(SENDER_PHONE),
+      ...(SENDER_PHONE && { from: normalizePhone(SENDER_PHONE) }),
       kakaoOptions: {
         pfId: process.env.SOLAPI_PFID!,
         templateId,
